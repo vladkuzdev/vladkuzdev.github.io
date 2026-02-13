@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Dancing+Script:wght@500;700&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --rose:   #e8315a;
+  --pink:   #ff6fa3;
+  --gold:   #f0c060;
+  --deep:   #1a0520;
+  --card:   rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.18);
+  --text:   rgba(255,245,250,0.92);
+  --soft:   rgba(255,200,220,0.75);
+}
+
+body {
+  background: radial-gradient(ellipse at 20% 20%, #3d0040 0%, #1a0520 40%, #0d0118 100%);
+  min-height:100vh;
+  font-family:'Raleway', sans-serif;
+  color: var(--text);
+  overflow-x:hidden;
+}
+
+/* Stars */
+.stars { position:fixed; inset:0; pointer-events:none; z-index:0; }
+.star {
+  position:absolute;
+  border-radius:50%;
+  background:white;
+  animation:twinkle ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,100%{ opacity:0.1; transform:scale(1); }
+  50%    { opacity:0.9; transform:scale(1.4); }
+}
+
+/* Floaters */
+.floaters { position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+.floater  {
+  position:absolute; top:-50px;
+  animation:fall linear infinite;
+  opacity:0.6;
+  font-size:1.2rem;
+}
+@keyframes fall {
+  from { transform:translateY(0) rotate(0deg); opacity:0; }
+  5%   { opacity:0.6; }
+  95%  { opacity:0.4; }
+  to   { transform:translateY(110vh) rotate(540deg); opacity:0; }
+}
+
+/* Layout */
+.page {
+  position:relative; z-index:10;
+  max-width:680px;
+  margin:0 auto;
+  padding:48px 20px 60px;
+}
+
+/* Progress bar */
+.progress-wrap {
+  display:flex; justify-content:center; align-items:center;
+  gap:10px; margin-bottom:48px;
+}
+.progress-dot {
+  width:10px; height:10px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.25);
+  transition:all 0.5s ease;
+  cursor:default;
+}
+.progress-dot.active {
+  background: var(--gold);
+  box-shadow:0 0 12px var(--gold);
+  transform:scale(1.35);
+}
+.progress-dot.done {
+  background: var(--pink);
+  box-shadow:0 0 8px var(--pink);
+}
+.progress-line {
+  width:40px; height:1px;
+  background:rgba(255,255,255,0.15);
+  transition:background 0.5s;
+}
+.progress-line.done { background: rgba(255,111,163,0.5); }
+
+/* ─── INTRO SCREEN ─── */
+.intro-screen {
+  text-align:center;
+  animation:fadeUp 1s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(32px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.intro-icon {
+  font-size:4.5rem; display:block; margin-bottom:20px;
+  animation:heartbeat 1.8s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(232,49,90,0.6));
+}
+@keyframes heartbeat {
+  0%,100%{ transform:scale(1); }
+  15%    { transform:scale(1.2); }
+  30%    { transform:scale(1); }
+  45%    { transform:scale(1.13); }
+}
+
+.intro-date {
+  font-family:'Dancing Script', cursive;
+  font-size:1.05rem;
+  color: var(--gold);
+  letter-spacing:3px;
+  margin-bottom:12px;
+  opacity:0.85;
+}
+.intro-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(2rem,6vw,3rem);
+  font-style:italic;
+  font-weight:700;
+  line-height:1.2;
+  margin-bottom:28px;
+  background:linear-gradient(135deg, #fff 30%, var(--gold) 60%, var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.intro-sub {
+  font-size:1rem;
+  color:var(--soft);
+  letter-spacing:0.5px;
+  margin-bottom:40px;
+  line-height:1.6;
+}
+
+.btn-start {
+  background:linear-gradient(135deg, var(--rose), var(--pink));
+  color:white; border:none;
+  padding:17px 52px;
+  border-radius:50px;
+  font-family:'Dancing Script', cursive;
+  font-size:1.35rem;
+  cursor:pointer;
+  box-shadow:0 8px 32px rgba(232,49,90,0.45);
+  border:2px solid rgba(255,255,255,0.25);
+  transition:all 0.25s;
+  letter-spacing:0.5px;
+}
+.btn-start:hover { transform:translateY(-4px) scale(1.05); box-shadow:0 14px 40px rgba(232,49,90,0.6); }
+
+/* ─── STEP CARDS ─── */
+.step-card {
+  display:none;
+  animation:fadeUp 0.8s cubic-bezier(.22,1,.36,1) both;
+}
+.step-card.active { display:block; }
+
+/* Photo block */
+.photo-block {
+  margin-bottom:32px;
+  position:relative;
+}
+.photo-wrap {
+  width:220px; height:220px;
+  margin:0 auto;
+  position:relative;
+}
+.photo-ring {
+  position:absolute; inset:-5px;
+  border-radius:50%;
+  background: conic-gradient(var(--rose), var(--gold), var(--pink), var(--rose));
+  animation:spin 4s linear infinite;
+  filter:blur(1px);
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.photo-ring-2 {
+  position:absolute; inset:-2px;
+  border-radius:50%;
+  background: conic-gradient(transparent 60%, rgba(255,255,255,0.3) 80%, transparent);
+  animation:spin 2s linear infinite reverse;
+}
+.photo-inner {
+  position:absolute; inset:5px;
+  border-radius:50%;
+  overflow:hidden;
+  border:3px solid rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.05);
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ── СЮДА ВСТАВЬ СВОЮ ФОТКУ ── */
+.photo-inner img {
+  width:100%; height:100%;
+  object-fit:cover;
+
+  /* ↓ ЗАМЕНИ src на путь к своей фотографии */
+  /* Пример 1 — если фото лежит в той же папке: src="photo.jpg" */
+  /* Пример 2 — ссылка из интернета: src="https://..." */
+}
+
+.photo-placeholder-text {
+  text-align:center;
+  color:rgba(255,255,255,0.4);
+  font-size:0.75rem;
+  font-weight:500;
+  letter-spacing:1px;
+  line-height:1.6;
+}
+.photo-placeholder-text span { font-size:1.8rem; display:block; margin-bottom:6px; }
+
+/* Step content */
+.step-number {
+  font-family:'Dancing Script', cursive;
+  font-size:0.95rem;
+  color:var(--gold);
+  letter-spacing:3px;
+  text-align:center;
+  margin-bottom:8px;
+  opacity:0.8;
+}
+
+.step-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(1.7rem,4.5vw,2.3rem);
+  font-style:italic;
+  font-weight:700;
+  text-align:center;
+  line-height:1.25;
+  margin-bottom:6px;
+  background:linear-gradient(135deg, #fff 40%, var(--gold));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.step-icon-row {
+  text-align:center;
+  font-size:1.5rem;
+  letter-spacing:8px;
+  margin:12px 0 20px;
+  animation:pulse-soft 2s ease-in-out infinite;
+}
+@keyframes pulse-soft {
+  0%,100%{ transform:scale(1); opacity:0.8; }
+  50%    { transform:scale(1.1); opacity:1; }
+}
+
+.divider {
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--border), transparent);
+  margin:20px 0;
+}
+
+/* Quote card */
+.quote-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px 32px;
+  backdrop-filter:blur(16px);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+}
+.quote-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0.5;
+}
+.quote-card::after {
+  content:'"';
+  position:absolute; top:-10px; left:16px;
+  font-family:'Playfair Display',serif;
+  font-size:7rem;
+  color:rgba(240,192,96,0.07);
+  line-height:1;
+  pointer-events:none;
+}
+
+.quote-text {
+  font-size:1.05rem;
+  line-height:2;
+  color:var(--text);
+  font-weight:300;
+  font-style:italic;
+  position:relative; z-index:1;
+}
+.quote-text strong {
+  color:var(--gold);
+  font-style:normal;
+  font-weight:600;
+  text-shadow:0 0 12px rgba(240,192,96,0.3);
+}
+.quote-text em {
+  color:var(--pink);
+  font-style:normal;
+  font-weight:600;
+}
+
+/* Navigation */
+.nav-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:28px;
+  gap:12px;
+}
+
+.btn-next {
+  background:linear-gradient(135deg, var(--rose), #c0183d);
+  color:white; border:none;
+  padding:14px 40px;
+  border-radius:50px;
+  font-family:'Dancing Script', cursive;
+  font-size:1.2rem;
+  cursor:pointer;
+  box-shadow:0 6px 24px rgba(232,49,90,0.4);
+  border:2px solid rgba(255,255,255,0.2);
+  transition:all 0.25s;
+  flex:1; max-width:200px;
+  margin-left:auto;
+}
+.btn-next:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(232,49,90,0.55); }
+
+.btn-prev {
+  background:transparent;
+  color:var(--soft);
+  border:1px solid rgba(255,255,255,0.18);
+  padding:14px 28px;
+  border-radius:50px;
+  font-family:'Raleway',sans-serif;
+  font-size:0.9rem;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-prev:hover { background:rgba(255,255,255,0.06); }
+
+/* ─── FINAL SCREEN ─── */
+.final-screen {
+  display:none;
+  text-align:center;
+  animation:fadeUp 0.8s ease both;
+}
+.final-screen.active { display:block; }
+
+.final-icon { font-size:4rem; display:block; margin-bottom:16px; animation:heartbeat 1.8s ease-in-out infinite; filter:drop-shadow(0 0 18px rgba(232,49,90,0.5)); }
+.final-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(1.8rem,5vw,2.5rem);
+  font-style:italic; font-weight:700;
+  margin-bottom:10px;
+  background:linear-gradient(135deg, #fff 30%, var(--gold) 60%, var(--pink));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.final-sub {
+  font-family:'Dancing Script', cursive;
+  font-size:1.3rem;
+  color:var(--gold); margin-bottom:24px; opacity:0.9;
+}
+.final-box {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px 32px;
+  backdrop-filter:blur(16px);
+  margin-bottom:28px;
+}
+.final-box p {
+  font-size:1.05rem; line-height:1.95;
+  color:var(--text); font-weight:300; font-style:italic;
+}
+.final-box strong { color:var(--gold); font-style:normal; font-weight:600; }
+.final-box em { color:var(--pink); font-style:normal; font-weight:600; }
+
+.hearts-final {
+  font-size:2rem; letter-spacing:12px;
+  animation:pulse-soft 2s infinite;
+}
+
+/* Confetti */
+.cp { position:fixed; pointer-events:none; z-index:9999; animation:cf 3.5s ease-in forwards; }
+@keyframes cf {
+  from { opacity:1; }
+  to   { transform:translateY(110vh) rotate(720deg); opacity:0; }
+}
+
+@media(max-width:480px){
+  .page { padding:32px 16px 48px; }
+  .photo-wrap { width:180px; height:180px; }
+  .quote-card { padding:22px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="floaters" id="floaters"></div>
+
+<div class="page">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-dot" id="dot-1"></div>
+    <div class="progress-line" id="line-1"></div>
+    <div class="progress-dot" id="dot-2"></div>
+    <div class="progress-line" id="line-2"></div>
+    <div class="progress-dot" id="dot-3"></div>
+  </div>
+
+  <!-- ── INTRO ── -->
+  <div class="intro-screen" id="intro">
+    <span class="intro-icon">🌹</span>
+    <p class="intro-date">✦ 14 ФЕВРАЛЯ ✦</p>
+    <h1 class="intro-title">Это послание<br>только для тебя</h1>
+    <p class="intro-sub">Три причины почему ты<br>делаешь мою жизнь особенной</p>
+    <button class="btn-start" onclick="startJourney()">Открыть 💌</button>
+  </div>
+
+  <!-- ── ШАГ 1 ── -->
+  <div class="step-card" id="step-1">
+    <p class="step-number">✦ ГЛАВА ПЕРВАЯ ✦</p>
+    <h2 class="step-title">Ты — волшебство<br>рядом со мной</h2>
+    <div class="step-icon-row">✨ 🌙 ✨</div>
+
+    <!-- ФОТО — ШАГ 1 -->
+    <div class="photo-block">
+      <div class="photo-wrap">
+        <div class="photo-ring"></div>
+        <div class="photo-ring-2"></div>
+        <div class="photo-inner">
+          <!-- ↓↓↓ ЗАМЕНИ src ЗДЕСЬ ↓↓↓ -->
+          <img src="photo.jpg" alt="Фото" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="photo-placeholder-text" style="display:none">
+            <span>📷</span>ВСТАВЬ ФОТО
+          </div>
+          <!-- ↑↑↑ ЗАМЕНИ src ЗДЕСЬ ↑↑↑ -->
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="quote-card">
+      <p class="quote-text">
+        Ты появилась в моей жизни — и всё стало <strong>иначе</strong>.<br>
+        Не шумно, не громко. Просто <em>по-настоящему светло</em>.<br><br>
+        В тебе есть что-то такое, чего не опишешь словами —<br>
+        какая-то <strong>тихая магия</strong>, которая заставляет меня<br>
+        радоваться каждому дню, когда ты рядом.<br><br>
+        Я не знаю, как мне так повезло.<br>
+        Но я <em>бесконечно рад</em>, что ты есть.
+      </p>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-next" onclick="goToStep(2)">Дальше →</button>
+    </div>
+  </div>
+
+  <!-- ── ШАГ 2 ── -->
+  <div class="step-card" id="step-2">
+    <p class="step-number">✦ ГЛАВА ВТОРАЯ ✦</p>
+    <h2 class="step-title">Ты держишь меня<br>за руку</h2>
+    <div class="step-icon-row">🤝 💕 🤝</div>
+
+    <div class="divider"></div>
+
+    <div class="quote-card">
+      <p class="quote-text">
+        Знаешь, что значит <strong>по-настоящему не бросать</strong>?<br>
+        Это ты. Именно ты.<br><br>
+        В моменты, когда я сомневался — ты была рядом.<br>
+        Когда мир казался серым — ты <em>держала меня за руку</em><br>
+        и напоминала, что всё будет хорошо.<br><br>
+        Ты не уходишь. Ты остаёшься.<br>
+        И это <strong>дороже всего на свете</strong>.<br><br>
+        Быть рядом с тобой — это <em>спокойствие</em>,<br>
+        которое я не хочу терять никогда.
+      </p>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" onclick="goToStep(1)">← Назад</button>
+      <button class="btn-next" onclick="goToStep(3)">Дальше →</button>
+    </div>
+  </div>
+
+  <!-- ── ШАГ 3 ── -->
+  <div class="step-card" id="step-3">
+    <p class="step-number">✦ ГЛАВА ТРЕТЬЯ ✦</p>
+    <h2 class="step-title">Ты — моя<br>мотивация</h2>
+    <div class="step-icon-row">🔥 ⭐ 🔥</div>
+
+    <div class="divider"></div>
+
+    <div class="quote-card">
+      <p class="quote-text">
+        Есть люди, которые вдохновляют просто своим существованием.<br>
+        Ты — <strong>именно такая</strong>.<br><br>
+        Когда мне хочется сдаться — я думаю о тебе.<br>
+        О твоей силе, о твоей улыбке, о том,<br>
+        как ты <em>идёшь вперёд</em> несмотря ни на что.<br><br>
+        Ты заставляешь меня хотеть быть <strong>лучшей версией себя</strong>.<br>
+        Стараться. Расти. Двигаться.<br><br>
+        Спасибо тебе за это. <em>Ты — мой огонь</em> 🔥
+      </p>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" onclick="goToStep(2)">← Назад</button>
+      <button class="btn-next" onclick="showFinal()">Финал 💖</button>
+    </div>
+  </div>
+
+  <!-- ── ФИНАЛ ── -->
+  <div class="final-screen" id="final">
+    <span class="final-icon">💖</span>
+    <h2 class="final-title">Ты моя самая<br>любимая</h2>
+    <p class="final-sub">С Днём Святого Валентина 🌹</p>
+
+    <div class="final-box">
+      <p>
+        Волшебная. Верная. Вдохновляющая.<br><br>
+        Это всё — <strong>про тебя</strong>.<br><br>
+        Я рад, что ты рядом каждый день.<br>
+        Рад, что ты держишь меня за руку.<br>
+        Рад, что ты <em>зажигаешь во мне огонь</em>.<br><br>
+        <strong>Ты — моя Валентинка. Сегодня и всегда.</strong>
+      </p>
+    </div>
+
+    <div class="hearts-final">💖 🌹 💖</div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── Stars ──
+const starsEl = document.getElementById('stars');
+for(let i=0;i<90;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const size=Math.random()*2.5+0.5;
+  s.style.cssText=`
+    left:${Math.random()*100}%;top:${Math.random()*100}%;
+    width:${size}px;height:${size}px;
+    animation-duration:${2+Math.random()*4}s;
+    animation-delay:${Math.random()*5}s;
+  `;
+  starsEl.appendChild(s);
+}
+
+// ── Floaters ──
+const ems=['🌸','💕','✨','💗','🌷','💖','🌹','⭐'];
+const fl=document.getElementById('floaters');
+for(let i=0;i<25;i++){
+  const d=document.createElement('div');
+  d.className='floater';
+  d.textContent=ems[Math.floor(Math.random()*ems.length)];
+  d.style.left=Math.random()*100+'vw';
+  d.style.fontSize=(0.7+Math.random()*1.1)+'rem';
+  d.style.animationDuration=(6+Math.random()*10)+'s';
+  d.style.animationDelay=(-Math.random()*15)+'s';
+  fl.appendChild(d);
+}
+
+// ── Navigation ──
+let current = 0;
+
+function startJourney(){
+  document.getElementById('intro').style.display='none';
+  document.getElementById('progress-wrap').style.display='flex';
+  goToStep(1);
+}
+
+function goToStep(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('step-'+i).classList.remove('active');
+  }
+  document.getElementById('final').classList.remove('active');
+  document.getElementById('step-'+n).classList.add('active');
+  current=n;
+  updateProgress(n);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showFinal(){
+  for(let i=1;i<=3;i++) document.getElementById('step-'+i).classList.remove('active');
+  document.getElementById('final').classList.add('active');
+  document.getElementById('progress-wrap').style.display='none';
+  launchConfetti();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress(n){
+  for(let i=1;i<=3;i++){
+    const dot=document.getElementById('dot-'+i);
+    dot.classList.remove('active','done');
+    if(i<n) dot.classList.add('done');
+    else if(i===n) dot.classList.add('active');
+  }
+  for(let i=1;i<=2;i++){
+    const ln=document.getElementById('line-'+i);
+    ln.classList.toggle('done', i<n);
+  }
+}
+
+// ── Confetti ──
+function launchConfetti(){
+  const cols=['#e8315a','#ff6fa3','#f0c060','#ffffff','#c400ff','#ff6b35','#00e5ff'];
+  for(let i=0;i<140;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='cp';
+      const s=5+Math.random()*9;
+      el.style.cssText=`
+        left:${Math.random()*100}vw; top:-20px;
+        width:${s}px; height:${s}px;
+        background:${cols[Math.floor(Math.random()*cols.length)]};
+        border-radius:${Math.random()>0.5?'50%':'3px'};
+        animation-duration:${2+Math.random()*2.5}s;
+        animation-delay:${Math.random()*0.4}s;
+      `;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),5000);
+    },i*20);
+  }
+}
+</script>
+</body>
+</html>
